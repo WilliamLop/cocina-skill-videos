@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Assets crudos y renders pesados (se generan localmente)
+originals_raw/
+renders/
+*.mp4
+*.mov
+*.wav
+*.m4a
+
+# HyperFrames builds y cache
+.media/
+node_modules/
