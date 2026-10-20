@@ -72,6 +72,7 @@ Toda decisión técnica en la skill responde directamente a la matriz histórica
 | **L14** | Packaging | Bloqueos de copyright por música comercial conocida. | Uso de tracks comerciales en el master. | **Pistas Propias o Librería Nativa:** Camas libres masterizadas a `-14 LUFS` o selección de audio en tendencia al publicar. |
 | **L15** | Packaging | Bajas tasas de "Guardar" en Shorts de cocina. | Falta de valor utilitario para el espectador. | **Receta Completa en Descripción:** Ingredientes y cantidades exactas en gramos (ES + EN). |
 | **L16** | Packaging | Bajo CTR con títulos genéricos tipo "Haciendo pasta". | Falta de curiosidad y gancho emocional. | **Estructura de Titulación Probada:** `¡Recreé el [Plato Icónico] de [Personaje / Caricatura]!` con hashtags de nicho. |
+| **L17** | Producción | Mutación de la comida o plato al decorar/terminar (`P001`). | Adjuntar el ancla vacía (`ANCHOR_03`) en pasos finales en lugar del plato ya montado. | **Encadenamiento de Ancla Progresiva (*Step-Anchor Chaining*):** En planos de decoración final (aceites, especias, cortes y bocado), adjuntar en `[+]` el fotograma del plano anterior (ej. `S14` para generar `S15`, y `S15` para generar `S16`) en vez del cuenco vacío. |
 
 ---
 

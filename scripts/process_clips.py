@@ -179,13 +179,15 @@ def main():
         adj_db = round(diff, 2)
         if not args.dry_run:
             tmp_out = os.path.join(flow_dir, f"_tmp_{fname}")
+            # En macOS usar aac_at (AudioToolbox) para velocidad 100x y evitar cuelgues del software encoder
+            aac_codec = "aac_at" if sys.platform == "darwin" else "aac"
             cmd_norm = [
                 ffmpeg_bin,
                 "-y",
                 "-i", source_for_processing,
                 "-af", f"volume={adj_db}dB",
                 "-c:v", "copy",
-                "-c:a", "aac",
+                "-c:a", aac_codec,
                 "-b:a", "192k",
                 tmp_out,
             ]

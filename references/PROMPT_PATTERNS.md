@@ -96,6 +96,13 @@ Vertical 9:16, eye-level front view of a [NOMBRE DEL PLATO HERO] resting on a da
 Vertical 9:16, 45-degree high-angle close-up of two hands holding the two freshly cut halves of a [SÁNDWICH / PLATO CON QUESO] pressed gently together on a dark walnut board, with molten glossy [TIPO DE QUESO] beginning to stretch between the two halves. Warm side lighting, 50mm f/2.0 lens, photorealistic, no text.
 ```
 
+### Patrón F: Encadenamiento de Ancla Progresiva (*Step-Anchor Chaining* en Emplatado)
+> **Principio (L17):** En las fases donde se van añadiendo capas finales sobre un plato ya servido (ej. poner proteína o burrata -> verter aceite/salsa -> moler pimienta/hierbas -> levantar bocado), **NO** se adjunta el ancla vacía del cuenco (`ANCHOR_03`). Se adjunta en el botón `[+]` el fotograma del plano anterior (`S14` para generar `S15`, y `S15` para generar `S16`). Esto garantiza que la geometría de la comida, la forma del plato y la iluminación se mantengan 100% idénticas.
+
+```text
+Vertical 9:16, 45-degree high-angle macro close-up of [ELEMENTO A AGREGAR / ACCIÓN: ej. a wooden pepper mill grinding black pepper / a hand drizzling olive oil] directly above the [PLATO COMPLETO MONTADO EN EL PASO ANTERIOR], resting in the handcrafted cream ceramic bowl. Warm side lighting (4500K), 50mm f/2.0 lens, photorealistic editorial food photography, no faces, no text.
+```
+
 ---
 
 ## 4. Fórmulas para el Prompt de Video (`[VID]` — Veo 3.1)
