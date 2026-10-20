@@ -1,155 +1,167 @@
-# Guía Maestra de Generación en Google Flow — Piloto `[CÓDIGO_PILOTO]`: [NOMBRE DEL PLATO / RECETA]
+# Guía Maestra de Generación en Google Flow — Episodio `[CÓDIGO]`: [NOMBRE DEL PLATO / RECETA]
 
 - **Fecha:** [YYYY-MM-DD]
-- **Formato:** [Formato 1: Cocina POV Editorial ASMR | Formato 2: Recreación de Caricaturas en Split-Screen]
-- **Referencia base:** [Referencia editorial o clip animado de origen, ej. R029 / @culturaglotona]
+- **Combinación Matriz 2×2:** `[1A | 1B | 2A | 2B]`
+  - **Formato Editorial:** `[Formato 1: Cocina POV Editorial ASMR (Full 9:16) | Formato 2: Recreación de Caricaturas en Split-Screen (35%/65% -> Fullscreen)]`
+  - **Estilo de Fabricación:** `[Estilo A: 100% Video Continuo (.mp4) | Estilo B: Híbrido Percusivo (Imágenes Consecutivas Jump-Cuts 0.28s–0.40s + Clips de Video .mp4)]`
+- **Referencia / Caricatura base:** `[Referencia editorial o episodio animado de origen]`
 - **Proyecto HyperFrames asociado:** `projects/[NOMBRE_PROYECTO]/`
-- **Duración final del Short:** **`[XX.XX] segundos`** (`[NN] planos de video .mp4` · promedio `[X.XX] s/corte` · `1080x1920` a `30 fps`)
-- **Clip animado superior (si aplica Formato 2):** `projects/[NOMBRE_PROYECTO]/assets/cartoon_top.mp4` (`[W]x[H]`, `30 fps`, `[XX.XX] s`)
+- **Duración final del Short:** **`[XX.XX] segundos`** (`[NN] planos` · `1080x1920` a `30 fps`)
+- **Clip animado superior (si aplica Formato 2):** `projects/[NOMBRE_PROYECTO]/assets/cartoon_top.mp4` (`1080x612` o `1080x792`, `30 fps`, finaliza en `SPLIT_END = [XX.XX] s`)
 
 ---
 
-## 1. Configuración Base en Google Flow
+## 1. Reglas de Oro y Protocolo de Continuidad (`ANCHOR` vs. `Regla L17`)
 
-1. **Relación de Aspecto:** `Portrait (9:16)` en absolutamente todas las generaciones.
-2. **Flujo por cada plano (`S01` a `S[NN]`):**
-   - **Paso A (Imagen Inicial — Start Frame):** Modo `Create Image` → Modelo `Nano Banana Pro` → Pega el **Prompt de Imagen (`[IMG]`)** adjuntando en el botón **`[+]`** la imagen ancla correspondiente (`ANCHOR_01`, `ANCHOR_02` o `ANCHOR_03`).
-   - **Paso B (Animación y Audio ASMR):** Selecciona la imagen generada como **Start Frame** → Modo `Image to Video` → Modelo `Veo 3.1 - Fast` (para cortes, caídas de especias y acciones dinámicas) o `Veo 3.1 - Quality` (para emulsiones de salsas, quesos fundidos y payoff) → Duración `4s` → Pega el **Prompt de Video (`[VID]`)**.
-3. **Nombres de archivo al descargar:**
-   - Guarda los videos descargados en:
-     `projects/[NOMBRE_PROYECTO]/assets_flow/`
-   - Nómbralos exactamente: **`S01.mp4`, `S02.mp4`, `S03.mp4` ... hasta `S[NN].mp4`**.
-   - *(No necesitas guardar imágenes .jpg: el video es 100% .mp4 sin fotos estáticas).*
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                REGLA DE CONTINUIDAD ACUMULATIVA EN [+] (L17)                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ 🟢 INICIO DE ESTACIÓN (Superficie limpia):                                  │
+│    Usa `ANCHOR_01`, `ANCHOR_02` o `ANCHOR_03` vacío SOLO cuando la tabla,   │
+│    la sartén o el plato se estrenan vacíos en ese bloque.                   │
+│                                                                             │
+│ 🔗 PLATO EN PROGRESO (Mitad de receta, cocción, armado o Jump-Cuts):        │
+│    Si la sartén, la tabla o el plato YA tienen ingredientes del paso        │
+│    anterior, NUNCA adjuntes el Anchor vacío (porque la IA rehace los        │
+│    ingredientes desde cero). Adjunta en [+] la IMAGEN O FRAME DEL PLANO     │
+│    ANTERIOR `S(N-1)` para mantener 100% idéntica la comida que ya llevas.   │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Flujo por cada plano (`S01` a `S[NN]`):
+- **Si el plano es `VIDEO (.mp4)`:**
+  1. **Paso A (`[IMG]`):** `Create Image` → `Nano Banana Pro (9:16)` → Adjunta en **`[+]`** la referencia indicada (`🟢 ANCHOR` o `🔗 S(N-1)`).
+  2. **Paso B (`[VID]`):** Selecciona la imagen como **Start Frame** → `Image to Video` → `Veo 3.1 Fast` o `Quality` (`4s`) → Pega el prompt `[VID]`. Descarga como `SXX.mp4` en `assets_flow/`.
+- **Si el plano es `IMAGEN CONSECUTIVA / JUMP-CUT (.png)` (Solo en Estilo B):**
+  1. **Paso Único (`[SOLO IMG]`):** `Create Image` → `Nano Banana Pro (9:16)` → Adjunta en **`[+]`** la imagen del plano inmediatamente anterior `S(N-1)` → Pega el prompt `[IMG]`.
+  2. Descarga únicamente la imagen como `SXX.png` en `assets_flow/` *(NO generes video; `assemble.py` le aplicará el corte seco de `0.30 s` y el sonido Foley de `assets/sfx/`)*.
 
 ---
 
-## 2. Las Imágenes Ancla de Escenario (Generar primero en `Nano Banana Pro`)
+## 2. Imágenes Ancla de Escenario (Generar una sola vez al inicio en `Nano Banana Pro`)
 
-Genera estas imágenes vacías antes de crear ningún alimento y tenlas descargadas para adjuntarlas en el botón **`[+]`**:
-
-### `ANCHOR_01` (Estación Principal — Tabla de Nogal Oscuro)
+### `ANCHOR_01` (Estación Principal — Tabla de Nogal Vacía)
 ```text
 Vertical 9:16, 45-degree high-angle POV shot of a warm rustic kitchen workstation. A thick dark end-grain walnut wooden cutting board resting on a matte warm-grey limestone countertop. Soft natural morning daylight coming from a window on the left (4500K), subtle warm shadows, shallow depth of field, 50mm f/2.0 lens, photorealistic editorial food photography, empty center ready for ingredients, no hands, no food, no text.
 ```
 
-### `ANCHOR_02` (Estación de Fuego — Sartén Caliente)
+### `ANCHOR_02` (Estación de Fuego — Sartén o Plancha Vacía)
 ```text
 Vertical 9:16, 45-degree high-angle close-up shot of a heavy 28cm brushed stainless steel chef skillet with copper-core rim sitting on a sleek black induction cooktop. Warm natural side lighting from the left (4500K), realistic metallic reflections, shallow depth of field, 50mm f/2.0 lens, photorealistic, empty pan, no hands, no food, no text.
 ```
 
-### `ANCHOR_03` (Estación de Emplatado — Plato Artesanal Cerámico)
+### `ANCHOR_03` (Estación de Emplatado — Plato o Cuenco Vacío)
 ```text
 Vertical 9:16, 45-degree high-angle shot of a handcrafted matte warm-cream ceramic dinner plate resting on a dark walnut wooden table. Soft warm side window light from the left (4500K), subtle linen napkin in the blurred background, 50mm f/2.0 lens, photorealistic editorial food photography, empty plate, no hands, no food, no text.
 ```
 
 ---
 
-## 3. Mapa Cronométrico y Sincronización Segundo a Segundo
+## 3. Mapa Cronométrico Sincronizado Segundo a Segundo
 
-| Plano | Tiempo en el Short | Duración | Ventana (`media-start`) | Lo que ocurre ARRIBA / Contexto | Lo que ocurre ABAJO (Cocina en Flow) | Sonido Foley Nativo (Veo) |
-|---|---|---|---|---|---|---|
-| **`S01.mp4`** | `0.00 s – 1.50 s` | `1.50 s` | `0.35 s` | [Contexto inicial o Cartoon Hook] | **Hero Reveal:** [Plato terminado o corte crujiente] | Crujido inicial o golpe sólido |
-| **`S02.mp4`** | `1.50 s – 2.80 s` | `1.30 s` | `0.30 s` | [Paso 1 del personaje / Caricatura] | [Ingrediente 1 / Preparación base] | [Sonido de corte o especias] |
-| **`S03.mp4`** | `2.80 s – 4.20 s` | `1.40 s` | `0.35 s` | [Paso 2] | [Ingrediente 2 / Masaje o fuego] | [Chisporroteo o crujido] |
-| **...** | ... | ... | ... | ... | ... | ... |
-| **`S[NN].mp4`**| `[XX.XX] s – [XX.XX] s` | `[X.XX] s` | `0.35 s` | [Payoff Final / Pantalla Completa] | **Payoff:** [Bocado humeante o cheese pull hacia cámara] | Vapor cálido y crujido final |
+| Plano | Tipo (`video`/`image`) | Tiempo en Short | Duración | Referencia en `[+]` | Contexto / Caricatura (ARRIBA) | Acción en Cocina Flow (ABAJO) | Audio Foley / SFX |
+|---|---|---|---|---|---|---|---|
+| **`S01`** | `video` (`.mp4`) | `0.00s – 1.40s` | `1.40s` | 🟢 `ANCHOR_03` | [Hook 1] | **Hero Reveal:** Plato terminado humeante | Foley nativo Veo |
+| **`S02`** | `video` (`.mp4`) | `1.40s – 2.70s` | `1.30s` | 🔗 `Frame S01` | [Hook 2] | **Acción Hook:** Corte / Dip / Rotura sobre `S01` | `CRUNCH` / `SLOSH` |
+| **`S03`** | `image` o `video` | `2.70s – 3.00s` | `0.30s` | 🟢 `ANCHOR_01` | [Preparación 1] | Ingrediente entero bajo el cuchillo en tabla | `knife_chop_wood.wav` |
+| **`S04`** | `image` o `video` | `3.00s – 3.30s` | `0.30s` | 🔗 `Imagen S03` | [Preparación 2] | Mismo ingrediente cortado en tiras sobre `S03` | `knife_chop_wood.wav` |
+| **`S05`** | `image` o `video` | `3.30s – 3.60s` | `0.30s` | 🔗 `Imagen S04` | [Preparación 3] | Mismo ingrediente cortado en dados sobre `S04` | `bench_scraper.wav` |
+| **`S06`** | `video` (`.mp4`) | `3.60s – 5.00s` | `1.40s` | 🟢 `ANCHOR_02` | [Fuego 1] | Entrada de mantequilla y proteína a sartén limpia | `SIZZLE` nativo Veo |
+| **`S07`** | `video` (`.mp4`) | `5.00s – 6.40s` | `1.40s` | 🔗 `Frame S06` | [Fuego 2] | Vertido de salsa sobre la proteína ya dorada de `S06` | Vertido y burbujeo |
+| **...** | ... | ... | ... | ... | ... | ... | ... |
+| **`S[NN]`**| `video` (`.mp4`) | `[XX.X]s – [FIN]s`| `1.80s` | 🔗 `Frame S(N-1)`| **PANTALLA COMPLETA** | **Payoff:** Bocado humeante levantado hacia cámara | Vapor y bocado final |
 
 ---
 
 ## 4. Prompts Exactos Plano por Plano (`S01` a `S[NN]`)
 
-### BLOQUE 1 — Doble Hook Inicial (`0.00 s – [X.XX] s`)
+### BLOQUE 1 — Doble Hook Sensorial (`0.00 s – [X.XX] s`)
 
-#### Plano `S01` (`0.00 s – 1.50 s`) — Hero Reveal
-- **📎 ADJUNTAR EN `[+]`:** `ANCHOR_01` (Tabla de Nogal Oscuro)
+#### Plano `S01` (`0.00 s – 1.40 s`) — Hero Reveal del Plato Terminado `[VIDEO .mp4]`
+- **📎 ADJUNTAR EN `[+]`:** 🟢 `ANCHOR_03` (Plato/Cuenco Vacío)
 - **`[IMG] Prompt (Nano Banana Pro, 9:16)`:**
   ```text
-  Vertical 9:16, 45-degree high-angle close-up of [DESCRIPCIÓN DEL PLATO COMPLETO TERMINADO] resting on a dark end-grain walnut wooden cutting board. Glistening textures, delicate wisps of hot steam rising, warm natural side window light from the left (4500K), shallow depth of field, 50mm f/2.0 lens, photorealistic editorial food photography, no hands, no text.
-  ```
-- **`[VID] Prompt (Veo 3.1 Fast, Image-to-Video, 4s)`:**
-  ```text
-  Slow cinematic push-in toward the [PLATO TERMINADO] on the dark walnut cutting board as delicate steam rises and juices glisten on the surface. Crisp ASMR kitchen audio: [SONIDO ESPECÍFICO: faint buttery sizzle / warm room ambiance], no music, no voice, no glitches.
-  ```
-
----
-
-#### Plano `S02` (`1.50 s – 2.80 s`) — El Corte Diagonal Crujiente
-- **📎 ADJUNTAR EN `[+]`:** `ANCHOR_01` (Tabla de Nogal Oscuro)
-- **`[IMG] Prompt (Nano Banana Pro, 9:16)`:**
-  ```text
-  Vertical 9:16, 45-degree high-angle close-up of a whole, completely uncut [ALIMENTO] on a dark walnut cutting board. One hand holds the side of the [ALIMENTO] steady while the other hand holds a sharp stainless steel chef's knife poised 2 centimeters in the air directly above, ready to slice down. Warm side lighting (4500K), 50mm f/2.0 lens, photorealistic, no text.
-  ```
-- **`[VID] Prompt (Veo 3.1 Fast, Image-to-Video, 4s)`:**
-  ```text
-  The chef's knife presses down firmly through the [ALIMENTO] in one decisive slice, cutting cleanly through to the wooden board. Crisp ASMR kitchen audio: loud ultra-crispy crunch followed by a clean wooden tap on the cutting board, no music, no voice, no glitches.
-  ```
-
----
-
-### BLOQUE 2 — Preparación y Cocción (`[X.XX] s – [XX.XX] s`)
-
-#### Plano `S03` (`[XX.XX] s – [XX.XX] s`) — [Acción de Cocción / Fuego]
-- **📎 ADJUNTAR EN `[+]`:** `ANCHOR_02` (Sartén Caliente)
-- **`[IMG] Prompt (Nano Banana Pro, 9:16)`:**
-  ```text
-  Vertical 9:16, 45-degree high-angle close-up of [INGREDIENTE] entering a hot [SARTÉN DE ACERO / HIERRO] coated with foaming melted butter and extra virgin olive oil. Warm side lighting, 50mm f/2.0 lens, photorealistic, no text.
-  ```
-- **`[VID] Prompt (Veo 3.1 Fast/Quality, Image-to-Video, 4s)`:**
-  ```text
-  [INGREDIENTE] sizzles vigorously upon contacting the hot foaming butter in the skillet, sending up lively golden bubbles and aromatic steam. Crisp ASMR kitchen audio: immediate punchy high-heat pan sizzle as food hits hot foaming butter, no music, no voice, no glitches.
-  ```
-
----
-
-### BLOQUE 3 — Fusión y Payoff Final (`[XX.XX] s – [FINAL] s`)
-
-#### Plano `S[NN]` (`[XX.XX] s – [FINAL] s`) — Bocado Final (*Hero Payoff*)
-- **📎 ADJUNTAR EN `[+]`:** `ANCHOR_03` (Plato Cerámico Artesanal)
-- **`[IMG] Prompt (Nano Banana Pro, 9:16)`:**
-  ```text
-  Vertical 9:16, 45-degree high-angle macro close-up of a fork / hands holding a steaming, juicy bite of [PLATO] lifted directly above the plate. Glossy sauce clinging, melted cheese stretching, hot steam curls rising into warm window light, 50mm f/1.8 lens, shallow depth of field, photorealistic, no text.
+  Vertical 9:16, 45-degree high-angle close-up of [DESCRIPCIÓN DEL MASTER HERO TERMINADO] resting on the handcrafted ceramic plate on a dark walnut table. Glistening textures, delicate wisps of hot steam rising, warm side window light (4500K), shallow depth of field, 50mm f/2.0 lens, photorealistic editorial food photography, no hands, no text.
   ```
 - **`[VID] Prompt (Veo 3.1 Quality, Image-to-Video, 4s)`:**
   ```text
-  The fork / hand slowly moves the steaming bite slightly closer to the camera lens, showcasing the rich glistening textures and escaping curls of warm steam. Crisp ASMR kitchen audio: subtle savory lift and quiet warm room ambiance, no music, no voice, no glitches.
+  Slow cinematic push-in toward the steaming [PLATO TERMINADO] as delicate steam rises and glossy juices glisten under warm window light. Crisp ASMR kitchen audio: faint warm sizzle and cozy room ambiance, no music, no voice, no glitches.
   ```
 
 ---
 
-## 5. Empaquetado SEO Bilingüe
-
-**Título Optimizado para CTR y Búsqueda:**
-`[Título Principal con Gancho] #receta #[palave_clave1] #[palabra_clave2] #foodporn`
-
-*(Ejemplo Formato 1: Creamy Garlic Butter Shrimp Pasta 🍤 #shrimppasta #easyrecipes)*  
-*(Ejemplo Formato 2: ¡Recreé el Poor Boy Gigante de Scooby-Doo! 🥪 #scoobydoo #sandwichgigante)*
-
-**Descripción para YouTube Shorts / Reels (Inglés + Español con Gramajes Exactos):**
-
-```text
-[NOMBRE DEL PLATO EN INGLÉS]
-
-Ingredients:
-- [Ingrediente 1] — [Cantidad en gramos/ml]
-- [Ingrediente 2] — [Cantidad en gramos/ml]
-- [Ingrediente 3] — [Cantidad en gramos/ml]
-
-Step-by-step instructions:
-1. [Instrucción breve 1]
-2. [Instrucción breve 2]
-3. [Instrucción breve 3]
+#### Plano `S02` (`1.40 s – 2.70 s`) — Acción Táctil del Hook `[VIDEO .mp4]`
+- **📎 ADJUNTAR EN `[+]`:** 🔗 `Fotograma de S01` *(Regla L17: Mantiene el mismo plato del Hook 1)*
+- **`[IMG] Prompt (Nano Banana Pro, 9:16)`:**
+  ```text
+  Vertical 9:16, 45-degree high-angle close-up keeping the exact same [PLATO TERMINADO] from the reference image intact, with a [CUCHILLO / TENEDOR / MANO] poised 2 centimeters above the center ready to [slice straight down / break open / dip]. Warm side lighting (4500K), 50mm f/2.0 lens, photorealistic, no text.
+  ```
+- **`[VID] Prompt (Veo 3.1 Fast/Quality, Image-to-Video, 4s)`:**
+  ```text
+  The [CUCHILLO / TENEDOR] presses down cleanly into the [PLATO], revealing the steaming juicy interior. Crisp ASMR kitchen audio: loud ultra-crispy crunch and juicy texture sound, no music, no voice, no glitches.
+  ```
 
 ---
 
-[NOMBRE DEL PLATO EN ESPAÑOL]
+### BLOQUE 2 — Ejemplo de Secuencia en Tabla (Adaptar según Estilo A o Estilo B)
 
-Ingredientes:
-- [Ingrediente 1] — [Cantidad en gramos/ml]
-- [Ingrediente 2] — [Cantidad en gramos/ml]
-- [Ingrediente 3] — [Cantidad en gramos/ml]
+#### *(Si es Estilo B: Jump-Cut de Imágenes Consecutivas `0.30s` con `L17`)*
+#### Plano `S03` (`2.70 s – 3.00 s`) — Estado 1: Ingrediente Entero `[SOLO IMAGEN .png + SFX knife_chop_wood.wav]`
+- **📎 ADJUNTAR EN `[+]`:** 🟢 `ANCHOR_01` (Tabla de Nogal Vacía)
+- **`[SOLO IMG] Prompt (Nano Banana Pro, 9:16 — NO generar video)`:**
+  ```text
+  Vertical 9:16, 45-degree high-angle close-up of whole fresh [INGREDIENTE] resting in the center of the dark end-grain walnut cutting board, with a sharp stainless steel chef's knife blade resting gently on top. Warm side window light (4500K), 50mm f/2.0 lens, photorealistic, no text.
+  ```
 
-Paso a paso:
-1. [Instrucción breve 1]
-2. [Instrucción breve 2]
-3. [Instrucción breve 3]
+#### Plano `S04` (`3.00 s – 3.30 s`) — Estado 2: Cortado en Tiras/Mitades `[SOLO IMAGEN .png + SFX knife_chop_wood.wav]`
+- **📎 ADJUNTAR EN `[+]`:** 🔗 `Imagen de S03` *(Regla L17: Mantiene la misma tabla e ingrediente)*
+- **`[SOLO IMG] Prompt (Nano Banana Pro, 9:16 — NO generar video)`:**
+  ```text
+  Vertical 9:16, 45-degree high-angle close-up keeping the exact same dark walnut cutting board and lighting from the reference image, now showing the exact same [INGREDIENTE] cleanly sliced into [long even strips / clean halves] in the exact same spot on the board. Photorealistic, 50mm f/2.0 lens, no hands, no text.
+  ```
+
+---
+
+### BLOQUE 3 — Cocción y Armado Progresivo con Regla `L17`
+
+#### Plano `S06` (`[XX.XX] s – [XX.XX] s`) — Inicio en Sartén Caliente `[VIDEO .mp4]`
+- **📎 ADJUNTAR EN `[+]`:** 🟢 `ANCHOR_02` (Sartén Vacía)
+- **`[IMG] Prompt (Nano Banana Pro, 9:16)`:**
+  ```text
+  Vertical 9:16, 45-degree high-angle close-up of [INGREDIENTE 1] entering the hot skillet coated with foaming golden butter. Warm side lighting (4500K), 50mm f/2.0 lens, photorealistic, no text.
+  ```
+- **`[VID] Prompt (Veo 3.1 Fast, Image-to-Video, 4s)`:**
+  ```text
+  [INGREDIENTE 1] sizzles vigorously in the hot foaming butter as aromatic steam rises. Crisp ASMR kitchen audio: immediate punchy high-heat pan sizzle, no music, no voice, no glitches.
+  ```
+
+#### Plano `S07` (`[XX.XX] s – [XX.XX] s`) — Adición sobre Comida en Progreso `[VIDEO .mp4]`
+- **📎 ADJUNTAR EN `[+]`:** 🔗 `Fotograma de S06` *(Regla L17: Conserva exactamente la comida que ya está en la sartén/tabla)*
+- **`[IMG] Prompt (Nano Banana Pro, 9:16)`:**
+  ```text
+  Vertical 9:16, 45-degree high-angle close-up keeping the exact same browned [INGREDIENTE 1] sizzling inside the skillet from the reference image intact, as a [JARRA / CUCHARA / MANO] tilted right above begins pouring [SALSA / CREMA / INGREDIENTE 2] over it. Warm side lighting (4500K), 50mm f/2.0 lens, photorealistic, no text.
+  ```
+- **`[VID] Prompt (Veo 3.1 Quality, Image-to-Video, 4s)`:**
+  ```text
+  The [SALSA / CREMA] pours smoothly over the sizzling [INGREDIENTE 1] in the skillet, bubbling and blending into a glossy rich sauce. Crisp ASMR kitchen audio: velvety liquid pour meeting a hot simmering pan, no music, no voice, no glitches.
+  ```
+
+---
+
+## 5. Comandos de Procesamiento, Ensamblaje y Packaging
+
+```bash
+# 1. Nivelar audios de clips .mp4 a -10 dB y respaldar originales
+python3 .agent/skills/cocina-audiovisual-flow/scripts/process_clips.py --project projects/[NOMBRE_PROYECTO]
+
+# 2. Generar index.html en HyperFrames (monta videos .mp4 e imágenes .png con SFX automáticos)
+python3 projects/[NOMBRE_PROYECTO]/assemble.py
+
+# 3. Validar 0 errores y 0 advertencias
+npx hyperframes check projects/[NOMBRE_PROYECTO]
+
+# 4. Render Master Final 1080x1920 a 30 fps
+npx hyperframes render projects/[NOMBRE_PROYECTO] --quality delivery --output projects/[NOMBRE_PROYECTO]/renders/[NOMBRE_PROYECTO]_final.mp4
 ```
+*(A continuación, completar y entregar `FICHA_PUBLICACION.md` para la subida al canal).*

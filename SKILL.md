@@ -1,171 +1,176 @@
 ---
 name: cocina-audiovisual-flow
-description: "Diseño, generación y ensamblaje de episodios de cocina fotorrealista vertical (9:16) en Google Flow (Nano Banana Pro + Veo 3.1) y HyperFrames. Soporta Formato 1 (POV Editorial ASMR, 18-22s) y Formato 2 (Recreación de Caricaturas en Split-Screen con expansión fullscreen, 18-25s). Aplica las 16 reglas canónicas de producción (100% video .mp4, ancla de escenario ANCHOR_01 en [+], estado inicial de cortes/vertidos, y normalización foley a -10 dB)."
+description: "Diseño, generación, ensamblaje y packaging de episodios de cocina fotorrealista vertical (9:16) en Google Flow (Nano Banana Pro + Veo 3.1) y HyperFrames. Domina la Matriz 2x2: Formato 1 (POV Editorial ASMR, 18-30s) y Formato 2 (Recreación de Caricaturas en Split-Screen con expansión fullscreen, 18-25s), combinables con Estilo A (100% Video .mp4) o Estilo B (Híbrido: Imágenes Consecutivas Jump-Cuts + Clips de Video .mp4 con librería Foley). Aplica el protocolo de continuidad acumulativa (ANCHOR vacío al iniciar estación y Regla L17 Step-Anchor Chaining adjuntando el plano anterior S(N-1) cuando el plato va a mitad), normalización foley a -10 dB y Ficha de Publicación completa."
 ---
 
-# Cocina Audiovisual Flow (`cocina-audiovisual-flow`)
+# Cocina Audiovisual Flow (`cocina-audiovisual-flow`) — v2.0
 
-Manual maestro y especificación operativa para la producción sistemática de episodios de cocina fotorrealista de alto impacto visual y sonoro, optimizados para YouTube Shorts, Instagram Reels y TikTok.
-
----
-
-## 1. Activación y Alcance de la Skill
-
-Esta skill se activa automáticamente cuando se requiere:
-- **Redactar Guías Maestras de Generación** para Google Flow (`Nano Banana Pro` + `Veo 3.1 Fast/Quality`).
-- **Planificar y Estructurar Episodios** en cualquiera de los dos formatos canónicos:
-  - **Formato 1: Cocina POV Editorial ASMR** (18 a 22 segundos, full 9:16, foley envolvente, cero rostros).
-  - **Formato 2: Recreación de Caricaturas en Split-Screen** (18 a 25 segundos, pantalla dual 35%/65% con expansión a pantalla completa).
-- **Inspeccionar y Nivelar Clips** descargados en `assets_flow/` mediante copia de seguridad inmutable y normalización de picos de audio a `-10 dBFS`.
-- **Ensamblar Proyectos en HyperFrames** generando `index.html` calibrado con recortes de inercia (`data-media-start`) y validación estricta de 0 errores con `npx hyperframes check`.
+Manual maestro y especificación operativa en equipo para la producción, edición en HyperFrames y packaging de episodios de cocina fotorrealista de alto impacto visual y sonoro (YouTube Shorts, Instagram Reels y TikTok).
 
 ---
 
-## 2. Las 4 Reglas de Oro Innegociables
+## 1. La Matriz 2×2: Formatos Editoriales × Estilos de Fabricación
 
-Derivadas de los pilotos reales `P002` a `P006`, estas reglas son de obligado cumplimiento para evitar repeticiones de errores:
+Todo episodio debe definir desde el inicio qué combinación de la **Matriz 2×2** utilizará:
+
+```
+                  │ ESTILO DE FABRICACIÓN A          │ ESTILO DE FABRICACIÓN B
+                  │ 100% Clips de Video (.mp4)       │ Híbrido Percusivo: Imágenes Consecutivas
+                  │ (Fluidez Continua)               │ (Jump-Cuts 0.28s–0.40s) + Clips de Video (.mp4)
+──────────────────┼──────────────────────────────────┼────────────────────────────────────────────────
+FORMATO 1         │ Combinación 1A:                  │ Combinación 1B:
+Receta Full 9:16  │ POV ASMR 100% Video              │ POV ASMR con Jump-Cuts en tabla + Video en fuego
+(1080x1920)       │ Todos los planos son .mp4 con    │ Secuencias de 2-3 imágenes consecutivas (.png)
+                  │ vapor y movimiento continuo      │ para picados/cortes rápidos con SFX CLACK +
+                  │ (ej. Pasta Camarones, Rigatoni). │ videos .mp4 en sartén, salsas y payoff (ej. Pollo Toscano).
+──────────────────┼──────────────────────────────────┼────────────────────────────────────────────────
+FORMATO 2         │ Combinación 2A:                  │ Combinación 2B:
+Split-Screen      │ Caricatura + 100% Video          │ Caricatura + Jump-Cuts + Video
+Caricaturas       │ Caricatura arriba + todos los    │ Caricatura arriba + imágenes consecutivas rápidas
+(35%/65% -> 100%) │ planos de abajo en .mp4 + cierre │ cuando el dibujo pica/apila + videos .mp4 en
+                  │ Fullscreen (ej. Elmer, Osos).    │ fuego, salsas y Payoff Fullscreen.
+```
+
+### ¿Cuándo elegir Estilo A vs. Estilo B?
+- **Estilo A (`100% Video .mp4`):** Ideal cuando toda la receta consiste en acciones fluidas (emulsiones, vertidos, salteados, deshebrado, estiramiento de queso).
+- **Estilo B (`Híbrido Imágenes Consecutivas + Clips de Video`):** Ideal cuando la receta tiene pasos de picado rápido o transformación geométrica en tabla (ej. *pechuga entera → en tiras → en dados*; *ajo entero → aplastado → picado*; *tomates enteros → partidos*; *capas rápidas de un sándwich*).
+  - **Ventaja 1:** Evita que la IA deforme los dedos al intentar picar rápido en video.
+  - **Ventaja 2:** Crea el ritmo percusivo adictivo de `0.28 s – 0.35 s` con sonidos reales de `assets/sfx/` (`knife_chop_wood.wav`, `knife_slice.wav`, `bench_scraper.wav`).
+  - **Ventaja 3:** Ahorra entre 35% y 45% de créditos de generación de video, reservando Veo 3.1 para los planos donde hay fuego, líquidos, vapor y el bocado final.
+
+---
+
+## 2. Las 5 Reglas de Oro Innegociables
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       LAS 4 REGLAS DE ORO CANÓNICAS                         │
+│                       LAS 5 REGLAS DE ORO CANÓNICAS                         │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│ 1. 100% VIDEO (.mp4), CERO FOTOS FIJAS:                                     │
-│    Prohibido usar imágenes estáticas en el render final. Cada plano debe    │
-│    tener micro-movimiento, vapor vivo, fluidos físicos y audio nativo.       │
+│ 1. PROTOCOLO DE CONTINUIDAD EN 2 NIVELES (ANCHOR vs. PLANO ANTERIOR L17):   │
+│    - 🟢 INICIO DE ESTACIÓN (Superficie limpia): Adjuntar en [+] el          │
+│      ANCHOR_01 / 02 / 03 vacío cuando se inaugura la tabla, sartén o plato. │
+│    - 🔗 PLATO EN PROGRESO (Mitad de receta, armado o Jump-Cuts): Cuando el  │
+│      plato ya lleva ingredientes en la tabla, sartén o cuenco, NUNCA        │
+│      adjuntar el Anchor vacío (porque la IA rehace los ingredientes y       │
+│      presenta otra comida). Adjuntar en [+] la IMAGEN O FRAME DEL PLANO     │
+│      ANTERIOR S(N-1) para conservar 100% idéntica la comida en curso.       │
 │                                                                             │
-│ 2. ANCLA DE ESCENARIO OBLIGATORIA (ANCHOR_01 en [+]):                       │
-│    Antes de generar alimentos, se fija la estación de trabajo vacía en       │
-│    Nano Banana Pro (9:16) y se adjunta en [+] en cada toma subsiguiente.    │
+│ 2. CERO FOTOS CONGELADAS LARGAS (ESTILO A o ESTILO B):                      │
+│    O se usa 100% video .mp4 (Estilo A), o se usan Jump-Cuts percusivos      │
+│    de imágenes consecutivas (0.28s–0.40s encadenadas con S(N-1) + SFX)      │
+│    combinadas con clips de video .mp4 en fuego, salsas y payoff (Estilo B). │
 │                                                                             │
 │ 3. REGLA DEL ESTADO INICIAL Y MASTER HERO:                                  │
-│    En cortes, el cuchillo se sitúa 2 cm suspendido sobre el alimento antes  │
-│    de bajar. En vertidos, la botella se inclina soltando la primera gota.   │
-│    En torres o sándwiches, se describe el Master Hero intacto una sola vez. │
+│    En cortes en video, el cuchillo empieza suspendido 2 cm arriba del       │
+│    alimento entero. En vertidos, la botella empieza inclinada con la        │
+│    primera gota asomando. El Master Hero mantiene las mismas capas siempre. │
 │                                                                             │
-│ 4. INGENIERÍA DE AUDIO FOLEY A -10 dB:                                      │
-│    Todo clip de Veo 3.1 se respalda en originals_raw/ y se nivela a -10 dB  │
-│    pico con `ffmpeg -af "volume=..." -c:v copy` sin recodificar video.      │
+│ 4. INGENIERÍA DE AUDIO FOLEY A -10 dB Y BALANCE DINÁMICO:                   │
+│    Todo clip de Veo se respalda en originals_raw/ y se nivela a -10 dBFS    │
+│    pico con `scripts/process_clips.py` (`aac_at` en macOS). En Formato 2,   │
+│    el foley va a 0.28 durante el diálogo del cartoon y sube a 1.00 al       │
+│    pasar a Pantalla Completa.                                               │
+│                                                                             │
+│ 5. PACKAGING Y FICHA DE PUBLICACIÓN OBLIGATORIA:                            │
+│    Ningún episodio termina sin su `FICHA_PUBLICACION.md` (3 títulos de      │
+│    alto CTR, receta bilingüe en gramos, comentario fijado y frame de        │
+│    portada) y su registro en `episodes/`.                                   │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 3. Matriz de las 16 Lecciones de Producción (L01 – L16)
+## 3. Matriz Histórica de las 19 Lecciones Canónicas (L01 – L19)
 
-Toda decisión técnica en la skill responde directamente a la matriz histórica de errores y soluciones probadas:
-
-| Código | Área | Error Original Identificado | Causa Raíz | Solución Canónica Incorporada |
+| Código | Área | Qué pasó en producción | Causa Raíz | Regla Canónica Incorporada |
 |---|---|---|---|---|
-| **L01** | Editorial | 8 imágenes fijas con zoom digital (`P002`). | Falta de generación de video en acciones intermedias. | **100% video `.mp4`:** Ningún plano fijo en el render final. |
-| **L02** | Editorial | Pérdida de retención al arrancar desde cero (`P002`). | Falta de impacto en los segundos 0–2. | **Doble Hook Obligatorio:** Mostrar el resultado terminado o el corte más crujiente en los primeros 1.5–2.0 s. |
-| **L03** | Editorial | Video terminado en seco al terminar la caricatura (`P004`). | Falta de recompensa final. | **Payoff a Pantalla Completa:** Expansión inmediata a `1080x1920` cuando concluye el dibujo animado. |
-| **L04** | Editorial | Mutación caótica al apilar un sándwich capa por capa. | La IA reinventa pan, lechuga y cocina en cada toma. | **La Trampa del Apilado:** Se define el Master Hero completo una sola vez y se usa en planos de corte y salsas. |
-| **L05** | Producción | Encimera mutaba entre mármol blanco y madera (`P003`). | Prompts generados directamente desde texto. | **Uso Obligatorio de `ANCHOR_01`:** Generar encimera vacía y adjuntarla siempre en `+`. |
-| **L06** | Producción | Cuchillo deformaba mantequilla a medio cortar (`P003`). | Solicitar "halfway slicing" en `[IMG]`. | **Regla del Estado Inicial:** Cuchillo suspendido 2 cm encima del ingrediente antes de iniciar el tajo. |
-| **L07** | Producción | Mano aparecía de la nada o frasco flotaba al verter salsa. | No posicionar la botella en el frame inicial. | **Regla del Vertido Inicial:** La botella aparece inclinada justo tocando la primera gota. |
-| **L08** | Producción | Operador olvidaba adjuntar el anchor en guías largas (`P006`). | Falta de contexto local en cada escena. | **Recordatorio Inline `📎 ADJUNTAR EN [+]`:** Cada plano lleva explícitamente el nombre del Anchor en su encabezado. |
-| **L09** | Edición | Suspiros y artefactos extraños de la IA en audio (`P004`). | Audio nativo de Veo sin auditar. | **Inspección de Audio por Plano:** Silenciar o limpiar ruidos no culinarios antes de ensamblar. |
-| **L10** | Edición | Diferencias de hasta 15 dB entre planos de Veo. | Falta de normalización de picos. | **Nivelación Foley a `-10 dB` a `-12 dB` pico:** Con `ffmpeg -c:v copy` por lotes. |
-| **L11** | Edición | Música de fondo tapaba el crujido del pan y la sartén. | Frecuencias medias-altas competían con el Foley. | **Muesca de EQ (`EQ dip`):** Atenuar `-3.5 dB` en los `2500 Hz – 3200 Hz` en la pista musical. |
-| **L12** | Edición | Inercia estática de 0.2s–0.5s en los arranques de Veo. | Arranque lento de la física de IA. | **Calibración de `data-media-start`:** Recortar los fotogramas lentos iniciales en `assemble.py`. |
-| **L13** | Packaging | Marcas de agua y logos de canales de TV en cartoons. | Descarga cruda de transmisiones de cable. | **Filtro `delogo` obligatorio:** Limpiar coordenadas antes de montar en HyperFrames. |
-| **L14** | Packaging | Bloqueos de copyright por música comercial conocida. | Uso de tracks comerciales en el master. | **Pistas Propias o Librería Nativa:** Camas libres masterizadas a `-14 LUFS` o selección de audio en tendencia al publicar. |
-| **L15** | Packaging | Bajas tasas de "Guardar" en Shorts de cocina. | Falta de valor utilitario para el espectador. | **Receta Completa en Descripción:** Ingredientes y cantidades exactas en gramos (ES + EN). |
-| **L16** | Packaging | Bajo CTR con títulos genéricos tipo "Haciendo pasta". | Falta de curiosidad y gancho emocional. | **Estructura de Titulación Probada:** `¡Recreé el [Plato Icónico] de [Personaje / Caricatura]!` con hashtags de nicho. |
-| **L17** | Producción | Mutación de la comida o plato al decorar/terminar (`P001`). | Adjuntar el ancla vacía (`ANCHOR_03`) en pasos finales en lugar del plato ya montado. | **Encadenamiento de Ancla Progresiva (*Step-Anchor Chaining*):** En planos de decoración final (aceites, especias, cortes y bocado), adjuntar en `[+]` el fotograma del plano anterior (ej. `S14` para generar `S15`, y `S15` para generar `S16`) en vez del cuenco vacío. |
+| **L01** | Editorial | Imágenes fijas largas sin ritmo parecen diapositivas. | Uso de fotos sueltas sin percusión ni movimiento. | **Estilo A (100% `.mp4`) o Estilo B (Jump-cuts `0.28s–0.40s` con SFX + `.mp4`).** |
+| **L02** | Editorial | Pérdida de retención al arrancar picando desde cero. | Falta de recompensa visual en los segundos 0–2. | **Doble Hook Obligatorio:** Mostrar el plato terminado (`Hero Reveal`) + acción táctil (`Dip` / `Corte` / `Cheese Pull`) en `0.0–2.8 s`. |
+| **L03** | Editorial | En Formato 2, el video cortaba en seco al acabar la caricatura. | Falta de clímax de cocina propia. | **Payoff a Pantalla Completa:** Expansión automática a `1080x1920` en el segundo `SPLIT_END`. |
+| **L04** | Editorial | Mutación caótica al inventar ingredientes distintos en cada plano. | Descripciones diferentes del plato entre escenas. | **ADN del Master Hero:** Describir exactamente los mismos ingredientes y capas en toda la guía. |
+| **L05** | Producción | Encimera mutaba entre mármol blanco y madera rústica. | Generar el primer plano desde texto sin referencia. | **Uso de `ANCHOR_01 / 02 / 03`:** Generar estaciones vacías primero en `Nano Banana Pro (9:16)`. |
+| **L06** | Producción | Cuchillo deformaba el ingrediente al pedir *"halfway slicing"*. | La IA dibuja el alimento ya partido y hace un corte extra. | **Regla del Estado Inicial (Corte):** Ingrediente entero y cuchillo suspendido 2 cm arriba antes de bajar. |
+| **L07** | Producción | Mano aparecía de la nada o frasco flotaba al verter salsa. | No posicionar el recipiente en el fotograma inicial. | **Regla del Vertido Inicial:** Botella o jarra inclinada en `[IMG]` soltando la primera gota. |
+| **L08** | Producción | Operador olvidaba qué adjuntar en guías largas. | Falta de indicador visible en cada escena. | **Recordatorio Inline `📎 ADJUNTAR EN [+]`:** Obligatorio en el encabezado de cada plano. |
+| **L09** | Edición | Suspiros o voces fantasma de la IA en clips de Veo. | Audio crudo sin auditar. | **Inspección por Plano:** Silenciar (`data-volume="0.00"`) o limpiar cualquier ruido no culinario. |
+| **L10** | Edición | Diferencias de hasta 15 dB entre planos de Veo. | Falta de normalización de picos. | **Nivelación Foley a `-10 dBFS` pico:** Procesar con `scripts/process_clips.py` antes de ensamblar. |
+| **L11** | Edición | La música de fondo tapaba el crujido del pan y la sartén. | Choque de frecuencias medias-altas. | **Muesca de EQ (`EQ dip`):** Atenuar `-3.5 dB` en `2600 Hz` (`Q: 1.2`) en la pista musical. |
+| **L12** | Edición | Inercia estática de `0.2s–0.4s` al arrancar clips de Veo. | Arranque lento de la física de IA. | **Calibración de `data-media-start`:** Recortar entre `0.30 s` y `0.35 s` iniciales en `assemble.py`. |
+| **L13** | Packaging | Logos de canales de TV en el clip de caricatura. | Descarga cruda sin limpiar. | **Filtro `delogo`:** Limpiar marcas de agua antes de montar `cartoon_top.mp4`. |
+| **L14** | Packaging | Bloqueos por canciones comerciales con copyright. | Uso de música comercial en el render. | **Pistas Libres o Audio Nativo de la App:** Exportar con foley limpio o cama libre a `-14 LUFS`. |
+| **L15** | Packaging | Pocos "Guardados" en Shorts/Reels. | Descripción sin receta detallada. | **Receta Bilingüe en Gramos:** Incluir ingredientes exactos en gramos/ml en Español e Inglés. |
+| **L16** | Packaging | Bajo CTR con títulos descriptivos planos. | Falta de curiosidad o nostalgia. | **Fórmula de Título:** `¡Recreé el [Plato Icónico] de [Caricatura]!` o gancho sensorial directo. |
+| **L17** | Producción | **Cuando el plato ya va a mitad, adjuntar un `ANCHOR` vacío hace que la IA rehaga los ingredientes desde cero y presente otra comida distinta.** | Contradicción entre la foto vacía adjunta y el prompt con comida acumulada. | **Encadenamiento de Continuidad (`Step-Anchor Chaining`):** Cuando el plato está en progreso (en tabla, sartén, armado de taco/sándwich, emplatado o secuencia de imágenes consecutivas), **adjuntar en `[+]` la imagen/frame del plano anterior `S(N-1)`** en vez del Anchor vacío. |
+| **L18** | Edición | En Formato 2, el foley de cocina a `0.80` tapaba el diálogo cómico de los personajes animados. | Volumen fijo en toda la línea de tiempo. | **Balance Dinámico Split/Full:** Foley inferior a `0.25–0.30` durante el diálogo del cartoon, y subida a `1.00` al expandir a Pantalla Completa en el corte final (`CRUNCH`). |
+| **L19** | Producción | En secuencias de picado rápido en video, la IA deforma los dedos o el cuchillo. | Pedir múltiples cortes rápidos dentro de un clip de 4s de Veo. | **Jump-Cuts de Imágenes Consecutivas (Estilo B):** Usar 2–3 imágenes consecutivas de `0.28s–0.35s` encadenadas con `L17` + SFX `knife_chop_wood.wav` de `assets/sfx/`. |
 
 ---
 
-## 4. Flujo de Trabajo en 5 Fases
+## 4. Flujo de Trabajo en 6 Fases (Producción + Packaging + Equipo)
 
 ```
-[ FASE 1: DESGLOSE ] ──> [ FASE 2: PROMPTING ] ──> [ FASE 3: RECEPCIÓN ] ──> [ FASE 4: ENSAMBLAJE ] ──> [ FASE 5: MASTER RENDER ]
-Escaleta al segundo      Anchor vacía +         Inspección + Backup    assemble.py con          npx hyperframes render
-y sincronización         Inline [📎 ADJUNTAR]   Nivelar a -10 dB       data-media-start         + Empaque SEO bilingüe
+[ FASE 1: MATRIZ 2x2 ] ──> [ FASE 2: GUÍA + L17 ] ──> [ FASE 3: GENERACIÓN ] ──> [ FASE 4: AUDIO -10dB ] ──> [ FASE 5: RENDER ] ──> [ FASE 6: PACKAGING + GIT ]
+Elegir Formato (1 o 2)     Anclas vacías al inicio    Nano Banana Pro +          process_clips.py +         assemble.py +          FICHA_PUBLICACION.md +
+y Estilo (A o B)           + Encadenar S(N-1) [+]     Veo 3.1 / Jump-Cuts        SFX de assets/sfx/         hyperframes delivery   Subida + git push al repo
 ```
 
-### Fase 1: Desglose y Escaleta Sincronizada
-1. Elegir el formato editorial:
-   - **Formato 1 (POV ASMR):** Consultar [FORMATO_1_POV_ASMR.md](./references/FORMATO_1_POV_ASMR.md). Duración objetivo: `18 a 22 s` (15 a 18 planos de ~1.1s).
-   - **Formato 2 (Split-Screen Caricaturas):** Consultar [FORMATO_2_SPLIT_CARICATURAS.md](./references/FORMATO_2_SPLIT_CARICATURAS.md). Duración objetivo: `18 a 25 s` (12 a 15 planos de ~1.5s).
-2. Si es Formato 2:
-   - Extraer clip animado con `yt-dlp` a máxima resolución.
-   - Limpiar marcas de agua con filtro `delogo` de `ffmpeg`.
-   - Establecer el segundo exacto de finalización de la caricatura para programar la transición a pantalla completa.
+### Fase 1: Selección en la Matriz 2×2 y Escaleta
+1. Definir la combinación del episodio:
+   - **`1A`:** Formato 1 (Full 9:16 POV ASMR) + Estilo A (100% Video `.mp4`).
+   - **`1B`:** Formato 1 (Full 9:16 POV ASMR) + Estilo B (Imágenes Consecutivas `0.30s` + Clips de Video `.mp4`).
+   - **`2A`:** Formato 2 (Caricaturas Split-Screen) + Estilo A (100% Video `.mp4`).
+   - **`2B`:** Formato 2 (Caricaturas Split-Screen) + Estilo B (Imágenes Consecutivas `0.30s` + Clips de Video `.mp4`).
+2. Consultar [FORMATO_1_POV_ASMR.md](./references/FORMATO_1_POV_ASMR.md) o [FORMATO_2_SPLIT_CARICATURAS.md](./references/FORMATO_2_SPLIT_CARICATURAS.md).
 
-### Fase 2: Protocolo de Prompts e Imágenes Ancla
-1. Utilizar la plantilla [GUIA_GENERACION_TEMPLATE.md](./templates/GUIA_GENERACION_TEMPLATE.md).
-2. Generar en `Nano Banana Pro (9:16)` las imágenes ancla vacías del escenario (`ANCHOR_01`, `ANCHOR_02`, `ANCHOR_03`).
-3. Aplicar las fórmulas canónicas de [PROMPT_PATTERNS.md](./references/PROMPT_PATTERNS.md) tanto para `[IMG]` (estado inicial) como para `[VID]` (Veo 3.1 con directiva ASMR).
-4. **Obligatorio:** Cada plano de la guía debe contener el bloque inline:
-   `- 📎 ADJUNTAR EN [+]: ANCHOR_0X (Descripción)`
+### Fase 2: Redacción de la Guía con Protocolo de Continuidad (`ANCHOR` vs `L17 S(N-1)`)
+1. Usar la plantilla [GUIA_GENERACION_TEMPLATE.md](./templates/GUIA_GENERACION_TEMPLATE.md) y las fórmulas de [PROMPT_PATTERNS.md](./references/PROMPT_PATTERNS.md).
+2. En cada plano, especificar con precisión quirúrgica el campo **`📎 ADJUNTAR EN [+]`**:
+   - Si la estación empieza limpia → **`🟢 ANCHOR_01 / 02 / 03` (Estación vacía)**.
+   - Si el plato ya tiene ingredientes de la toma previa → **`🔗 Fotograma/Imagen de S(N-1)` (Regla L17: conserva la comida en curso sin rehacerla)**.
+   - Si es una secuencia de *Jump-Cuts* de imágenes consecutivas (Estilo B) → **`🔗 Imagen de S(N-1)`** + indicar el archivo de sonido de `assets/sfx/` (ej. `knife_chop_wood.wav`).
 
-### Fase 3: Recepción, Backup y Nivelación de Audio
-Cuando el operador descargue los videos generados (`S01.mp4`, `S02.mp4`...) en la carpeta `assets_flow/` del proyecto:
-1. Ejecutar el script automatizado:
+### Fase 3: Generación en Google Flow y Recepción de Activos
+1.Guardar los activos descargados en `projects/<nombre_proyecto>/assets_flow/`:
+   - Videos: `S01.mp4`, `S04.mp4`, `S05.mp4`...
+   - Imágenes consecutivas (si se usa Estilo B): `S02.png`, `S03.png`...
+2. Ejecutar el procesador de clips:
    ```bash
    python3 scripts/process_clips.py --project projects/<nombre_proyecto>
    ```
-2. El script realiza automáticamente:
-   - Inspección técnica de códec, resolución (`1080x1920`) y framerate (`30 fps`).
-   - Copia de respaldo inmutable en `assets_flow/originals_raw/`.
-   - Detección de picos máximos con filtro `volumedetect`.
-   - Normalización de audio a **`-10.0 dBFS` pico** con `ffmpeg -c:v copy` (sin recodificar video, ultrarrápido).
+   *(Crea backup inmutable en `originals_raw/` y nivela todos los `.mp4` a `-10.0 dBFS` usando aceleración por hardware `aac_at` en macOS).*
 
-### Fase 4: Calibración y Ensamblaje en HyperFrames
-1. Configurar y ejecutar el ensamblador a partir de [ASSEMBLE_TEMPLATE.py](./templates/ASSEMBLE_TEMPLATE.py):
+### Fase 4: Ensamblaje Híbrido o Puro en HyperFrames
+1. Configurar `assemble.py` a partir de [ASSEMBLE_TEMPLATE.py](./templates/ASSEMBLE_TEMPLATE.py).
+   - El script detecta automáticamente tanto `.mp4` como `.png/.jpg`, y en los planos de imagen inyecta automáticamente el efecto Foley de `assets/sfx/` (`knife_chop_wood.wav`, `knife_slice.wav`, `bench_scraper.wav`, `spice_sprinkle.wav`).
+2. Generar `index.html` y verificar:
    ```bash
    python3 projects/<nombre_proyecto>/assemble.py
-   ```
-2. Calibrar `data-media-start` en cada plano (típicamente `0.25 s` a `0.45 s`) para eliminar el lag o inercia inicial del modelo Veo.
-3. Validar la composición con el motor de HyperFrames:
-   ```bash
    npx hyperframes check projects/<nombre_proyecto>
    ```
-   **Criterio de aprobación:** `0 errors, 0 warnings`.
+   **Criterio:** `0 errors, 0 warnings`.
 
-### Fase 5: Render Master de Entrega y Empaquetado
-1. Renderizar en calidad máxima de entrega (*delivery quality*):
-   ```bash
-   npx hyperframes render projects/<nombre_proyecto> --quality delivery --output projects/<nombre_proyecto>/renders/<nombre_proyecto>_final.mp4
-   ```
-2. Verificar el archivo final con `ffprobe`:
-   - Resolución exacta: `1080x1920` (9:16 vertical).
-   - Tasa de fotogramas: `30.0 fps` constante.
-   - Pista de audio: Estéreo AAC a `48 kHz`, integrado a `-14 LUFS`.
-3. Publicar con el bloque de empaquetado SEO bilingüe generado en la Fase 2 (ingredientes en gramos, inglés y español, y títulos de alto CTR).
-
----
-
-## 5. Estructura Canónica de un Proyecto
-
-Todo proyecto de producción creado con esta skill debe mantener este árbol de directorios:
-
-```text
-projects/<nombre_proyecto>/
-├── assets/                          # Medios externos (cartoon_top.mp4, música)
-│   └── cartoon_top.mp4              # Clip 16:9 HD limpio (en Formato 2)
-├── assets_flow/                     # Videos generados en Google Flow
-│   ├── S01.mp4                      # Video procesado con audio nivelado a -10 dB
-│   ├── S02.mp4
-│   └── originals_raw/               # BACKUP INMUTABLE de descargas crudas
-│       ├── S01.mp4
-│       └── S02.mp4
-├── renders/                         # Renders finales de HyperFrames
-│   └── <nombre_proyecto>_final.mp4  # Master final 1080x1920 a 30 fps
-├── assemble.py                      # Script de generación de index.html
-├── GUIA_GENERACION.md               # Guía con prompts e inline [📎 ADJUNTAR]
-├── hyperframes.json                 # Descriptor del proyecto HyperFrames
-└── index.html                       # Composición HTML + GSAP renderizable
+### Fase 5: Render Master de Entrega
+```bash
+npx hyperframes render projects/<nombre_proyecto> --quality delivery --output projects/<nombre_proyecto>/renders/<nombre_proyecto>_final.mp4
 ```
 
+### Fase 6: Packaging del Canal, Subida y Sincronización Git en Equipo
+1. Generar la ficha de subida usando [FICHA_PUBLICACION_TEMPLATE.md](./templates/FICHA_PUBLICACION_TEMPLATE.md) siguiendo las reglas de [PACKAGING_Y_PUBLICACION.md](./references/PACKAGING_Y_PUBLICACION.md).
+2. La persona encargada del canal sube el `.mp4` desde su PC copiando el Título, Descripción bilingüe en gramos, Primer Comentario Fijado y eligiendo el segundo exacto de Portada (*Thumbnail*).
+3. **Sincronización con el Equipo en GitHub:**
+   - Copiar la carpeta ligera del episodio (solo `GUIA_GENERACION.md`, `assemble.py` y `FICHA_PUBLICACION.md`, **sin archivos `.mp4`**) dentro de `episodes/<codigo_episodio>/`.
+   - Actualizar `episodes/README.md` y hacer `git add . && git commit -m "..." && git push origin main`.
+
 ---
 
-## 6. Recursos Relacionados en la Skill
+## 5. Recursos de la Skill
 
-- **[FORMATO_1_POV_ASMR.md](./references/FORMATO_1_POV_ASMR.md):** Especificación completa de Cocina POV Editorial ASMR.
-- **[FORMATO_2_SPLIT_CARICATURAS.md](./references/FORMATO_2_SPLIT_CARICATURAS.md):** Especificación de Split-Screen y expansión Fullscreen.
-- **[PROMPT_PATTERNS.md](./references/PROMPT_PATTERNS.md):** Fórmulas exactas para Nano Banana Pro y Veo 3.1.
-- **[GUIA_GENERACION_TEMPLATE.md](./templates/GUIA_GENERACION_TEMPLATE.md):** Plantilla para redactar guías de producción.
-- **[ASSEMBLE_TEMPLATE.py](./templates/ASSEMBLE_TEMPLATE.py):** Script de ensamblaje base para HyperFrames.
-- **[process_clips.py](./scripts/process_clips.py):** Script de inspección, backup y nivelación a -10 dB.
+- **[FORMATO_1_POV_ASMR.md](./references/FORMATO_1_POV_ASMR.md):** Especificación de Formato 1 (Estilo A y Estilo B).
+- **[FORMATO_2_SPLIT_CARICATURAS.md](./references/FORMATO_2_SPLIT_CARICATURAS.md):** Especificación de Formato 2 Split-Screen (Estilo A y Estilo B).
+- **[PROMPT_PATTERNS.md](./references/PROMPT_PATTERNS.md):** Fórmulas Nano Banana Pro, Veo 3.1, Regla `L17` (*Step-Anchor Chaining*) y Patrón G (*Jump-Cuts*).
+- **[PACKAGING_Y_PUBLICACION.md](./references/PACKAGING_Y_PUBLICACION.md):** Manual de subida, títulos A/B, miniatura, comentario fijado y bitácora del encargado del canal.
+- **[GUIA_GENERACION_TEMPLATE.md](./templates/GUIA_GENERACION_TEMPLATE.md):** Plantilla maestra de guías con soporte 2×2 y `L17`.
+- **[ASSEMBLE_TEMPLATE.py](./templates/ASSEMBLE_TEMPLATE.py):** Ensamblador universal HyperFrames (Full/Split + Video/Imagen con SFX).
+- **[FICHA_PUBLICACION_TEMPLATE.md](./templates/FICHA_PUBLICACION_TEMPLATE.md):** Plantilla lista para copiar y pegar al subir a YouTube/TikTok/Reels.
+- **[assets/sfx/](./assets/sfx/):** Librería oficial de 8 efectos Foley percusivos en `.wav` para imágenes consecutivas.
+- **[episodes/](./episodes/):** Biblioteca viva de episodios producidos por el equipo.

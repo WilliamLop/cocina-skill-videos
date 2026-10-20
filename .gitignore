@@ -13,7 +13,7 @@ env/
 venv/
 .venv/
 
-# Assets crudos y renders pesados (se generan localmente)
+# Assets crudos y renders pesados de proyectos (se generan localmente en cada PC)
 originals_raw/
 renders/
 *.mp4
@@ -21,6 +21,14 @@ renders/
 *.wav
 *.m4a
 
+# Excepción: Librería oficial de efectos Foley percusivos para Estilo B (Jump-Cuts)
+!assets/
+!assets/sfx/
+!assets/sfx/*.wav
+
 # HyperFrames builds y cache
 .media/
+.hyperframes/
+.thumbnails/
+.waveform-cache/
 node_modules/
